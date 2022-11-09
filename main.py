@@ -9,10 +9,10 @@ config = dotenv_values('.env')
 
 # global variables
 bot = interactions.Client(
-    token=config["DISCORD_TOKEN"],
+    token = config["DISCORD_TOKEN"],
 )
 
-platform = PlatformLinux()
+platform = PlatformLinux(config)
 
 
 @bot.event
@@ -28,8 +28,8 @@ async def screenshot(ctx: interactions.CommandContext):
     msg = await ctx.send(f"checking")
     filename = await platform.screenshot()
     file = interactions.File(filename)
-    embed = interactions.Embed()
-    embed.set_image(url="attachment://" + filename)
+    #embed = interactions.Embed()
+    #embed.set_image(url="attachment://" + filename)
 
     # create all the buttons
     buttonA = interactions.Button(
@@ -97,7 +97,8 @@ async def screenshot(ctx: interactions.CommandContext):
         components=[buttonSTART, buttonSELECT]
     )
 
-    await msg.edit(content="", files=file, embeds=(embed), components=[row1, row2, row3])
+    await msg.edit(content="", files=file, components=[row1, row2, row3])
+    platform.cleanup()
 
 
 # methods that are triggered by button presses on the discord message
