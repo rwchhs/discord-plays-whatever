@@ -33,7 +33,7 @@ class PlatformAbc(metaclass=ABCMeta):
         raise NotImplementedError()
 
     # TODO: this should be in a more generic helper/util class
-    def cleanup() -> None:
+    def cleanup(self) -> None:
         # cleanup temporary screenshots
         files = glob.glob("./tmp/screenshots/screen_*.png")
         for file in files:
@@ -41,3 +41,6 @@ class PlatformAbc(metaclass=ABCMeta):
                 os.remove(file)
             except:
                 pass
+
+    def run_client(self, rom_path: str) -> None:
+        raise NotImplementedError()

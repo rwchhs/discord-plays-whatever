@@ -1,3 +1,4 @@
+from typing import List, Tuple
 import interactions
 from interactions import Button
 from platform_linux import PlatformLinux
@@ -27,7 +28,18 @@ async def on_start():
     description="takes a screenshot of the client",
 )
 async def screenshot(ctx: interactions.CommandContext):
-    msg = await ctx.send(f"checking")
+    msg = await ctx.send(f"checking...")
+
+    file, components = await screenshot_compose_message()
+
+    await msg.edit(content="", files=file, components=components)
+    platform.cleanup()
+
+# This is its own method because if we put the code into screenshot() then we don't
+# actually have a way to string the "direct" /screenshot call and the /game routine together,
+# since game_select() only has a ComponentContext ctx that's incompatible
+# with screenshot()'s CommandContext, making it impossible to call the latter from within the former.
+async def screenshot_compose_message() -> Tuple[interactions.File, List[interactions.ActionRow]]:
     filename = await platform.screenshot()
     file = interactions.File(filename)
     #embed = interactions.Embed()
@@ -99,9 +111,7 @@ async def screenshot(ctx: interactions.CommandContext):
         components=[buttonSTART, buttonSELECT]
     )
 
-    await msg.edit(content="", files=file, components=[row1, row2, row3])
-    platform.cleanup()
-
+    return file, [row1, row2, row3]
 
 @bot.command(
     name="game",
@@ -142,6 +152,13 @@ async def button_A(ctx):
 @bot.component("menu_games")
 async def game_select(ctx, selected_option: str):
     original_message = ctx.message
-    pass
+    await original_message.edit(content="starting game...")
+    platform.run_client(selected_option[0])
+    
+    file, components = await screenshot_compose_message()
+
+    await original_message.edit(content="", files=file, components=components)
+    platform.cleanup()
+
 
 bot.start()

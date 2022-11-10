@@ -2,6 +2,7 @@ from platform_abc import PlatformAbc
 import pyautogui
 import pywinctl
 import time
+import subprocess
 
 
 class PlatformLinux(PlatformAbc):
@@ -40,3 +41,6 @@ class PlatformLinux(PlatformAbc):
         pyautogui.press(button.value[0])
 
         return
+
+    def run_client(self, rom_path: str) -> None:
+        subprocess.Popen(["/usr/bin/mgba", rom_path])
