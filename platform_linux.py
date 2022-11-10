@@ -24,7 +24,7 @@ class PlatformLinux(PlatformAbc):
 
         # uses the timestamp as a filename because just using "screenshot.png" and overwriting that
         # one didn't work.
-        filename = "./tmp/screenshots/" + str(time.time()) + ".png"
+        filename = "./tmp/screenshots/screen_" + str(time.time()) + ".png"
 
         pag.screenshot(filename, region=(
             window.left, window.top, window.width, window.height))

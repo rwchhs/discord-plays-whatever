@@ -6,8 +6,6 @@ import glob
 
 # Abstract Base Class, defining methods that need to be implemented
 # platform-specific
-
-
 class PlatformAbc(metaclass=ABCMeta):
     # Enum mapping UI buttons to keyboard buttons. Name refers to display name of the button
     # in the UI, value refers to keyboard button
@@ -37,7 +35,7 @@ class PlatformAbc(metaclass=ABCMeta):
     # TODO: this should be in a more generic helper/util class
     def cleanup() -> None:
         # cleanup temporary screenshots
-        files = glob.glob("./tmp/screenshots/")
+        files = glob.glob("./tmp/screenshots/screen_*.png")
         for file in files:
             try:
                 os.remove(file)

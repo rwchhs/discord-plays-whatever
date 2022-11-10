@@ -2,6 +2,8 @@ import interactions
 from interactions import Button
 from platform_linux import PlatformLinux
 from dotenv import dotenv_values
+import os
+import glob
 
 
 # load env variables
@@ -9,7 +11,7 @@ config = dotenv_values('.env')
 
 # global variables
 bot = interactions.Client(
-    token = config["DISCORD_TOKEN"],
+    token=config["DISCORD_TOKEN"],
 )
 
 platform = PlatformLinux(config)
@@ -101,10 +103,45 @@ async def screenshot(ctx: interactions.CommandContext):
     platform.cleanup()
 
 
+@bot.command(
+    name="game",
+    description="lets you pick a game to play",
+)
+async def game(ctx: interactions.CommandContext):
+    msg = await ctx.send(f"checking")
+
+    games = list()
+
+    # TODO: don't limit the emulator choice by file extension. However, temporary files
+    # and save files need to be filtered out still, any good way to accomplish both?
+    game_files = glob.glob("./roms/*.gba")
+
+    for game_file in game_files:
+        option = interactions.SelectOption(
+            label=game_file,
+            value=game_file,
+        )
+        games.append(option)
+
+    menu = interactions.SelectMenu(
+        options=games,
+        placeholder="available ROMs...",
+        custom_id="menu_games",
+    )
+
+    await msg.edit(content="pick a game to play", components=menu)
+
+
 # methods that are triggered by button presses on the discord message
 @bot.component("A")
 async def button_A(ctx):
     original_message = ctx.message
     await platform.button_press(platform.Buttons.A)
+
+# methods that are triggered by select actions on discord messages
+@bot.component("menu_games")
+async def game_select(ctx, selected_option: str):
+    original_message = ctx.message
+    pass
 
 bot.start()
